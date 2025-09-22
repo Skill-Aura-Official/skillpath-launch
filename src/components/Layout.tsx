@@ -13,7 +13,8 @@ import {
   Search,
   Bookmark,
   MessageSquare,
-  PlusCircle
+  PlusCircle,
+  Award
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -27,6 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
+import { ThemeSelector } from '@/components/ThemeSelector';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -41,6 +43,7 @@ export function Layout({ children }: LayoutProps) {
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Browse Jobs', href: '/jobs', icon: Search },
+    { name: 'Internships', href: '/internships', icon: Award },
     { name: 'Companies', href: '/companies', icon: Briefcase },
   ];
 
@@ -101,6 +104,9 @@ export function Layout({ children }: LayoutProps) {
 
             {/* User Menu or Auth Buttons */}
             <div className="flex items-center space-x-4">
+              {/* Theme Selector */}
+              <ThemeSelector />
+              
               {user && profile ? (
                 <>
                   {/* User Navigation */}

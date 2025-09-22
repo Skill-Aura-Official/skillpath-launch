@@ -1,159 +1,69 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, MapPin, Clock, Briefcase, Bookmark, ExternalLink, DollarSign } from 'lucide-react';
+import { Search, Filter, MapPin, Clock, Briefcase, Bookmark, ExternalLink, DollarSign, Users, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  companyLogo?: string;
-  location: string;
-  type: string;
-  workMode: string;
-  salary: string;
-  description: string;
-  skills: string[];
-  posted: string;
-  isExternal: boolean;
-  externalUrl?: string;
-  isSaved?: boolean;
-  isUrgent?: boolean;
-}
+import { jobApiService, JobListing, JobFilters } from '@/services/jobApiService';
 
 const Jobs = () => {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [locationFilter, setLocationFilter] = useState('all');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [workModeFilter, setWorkModeFilter] = useState('all');
+  const [jobs, setJobs] = useState<JobListing[]>([]);
+  const [filteredJobs, setFilteredJobs] = useState<JobListing[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Sample job data
-  const sampleJobs: Job[] = [
-    {
-      id: '1',
-      title: 'Frontend Developer Intern',
-      company: 'TechCorp',
-      location: 'San Francisco, CA',
-      type: 'internship',
-      workMode: 'remote',
-      salary: '$25-30/hr',
-      description: 'Join our dynamic team as a Frontend Developer Intern. Work on cutting-edge projects using React, TypeScript, and modern web technologies.',
-      skills: ['React', 'TypeScript', 'HTML/CSS', 'JavaScript'],
-      posted: '2 days ago',
-      isExternal: false,
-      isUrgent: true,
-    },
-    {
-      id: '2',
-      title: 'Marketing Associate',
-      company: 'Growth Co',
-      location: 'New York, NY',
-      type: 'full_time',
-      workMode: 'hybrid',
-      salary: '$45,000-55,000',
-      description: 'Looking for a creative Marketing Associate to help drive our growth initiatives and brand awareness campaigns.',
-      skills: ['Digital Marketing', 'Social Media', 'Analytics', 'Content Creation'],
-      posted: '1 week ago',
-      isExternal: false,
-    },
-    {
-      id: '3',
-      title: 'Data Analyst Intern',
-      company: 'DataFlow',
-      location: 'Remote',
-      type: 'internship',
-      workMode: 'remote',
-      salary: '$20-25/hr',
-      description: 'Analyze complex datasets and create meaningful insights to drive business decisions. Perfect for students with analytical skills.',
-      skills: ['Python', 'SQL', 'Excel', 'Tableau'],
-      posted: '3 days ago',
-      isExternal: true,
-      externalUrl: 'https://example.com/apply',
-    },
-    {
-      id: '4',
-      title: 'Software Engineer - Entry Level',
-      company: 'InnovateTech',
-      location: 'Austin, TX',
-      type: 'full_time',
-      workMode: 'onsite',
-      salary: '$70,000-85,000',
-      description: 'Entry-level software engineer position working on cloud infrastructure and microservices architecture.',
-      skills: ['Java', 'Spring Boot', 'AWS', 'Docker'],
-      posted: '5 days ago',
-      isExternal: false,
-    },
-    {
-      id: '5',
-      title: 'UX/UI Design Intern',
-      company: 'DesignStudio',
-      location: 'Los Angeles, CA',
-      type: 'internship',
-      workMode: 'hybrid',
-      salary: '$22-28/hr',
-      description: 'Create beautiful and intuitive user experiences for our mobile and web applications.',
-      skills: ['Figma', 'Adobe Creative Suite', 'Prototyping', 'User Research'],
-      posted: '1 day ago',
-      isExternal: false,
-      isUrgent: true,
-    },
-  ];
+  const [filters, setFilters] = useState<JobFilters>({});
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setJobs(sampleJobs);
-      setFilteredJobs(sampleJobs);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    fetchJobs();
+  }, [filters]);
 
-  useEffect(() => {
-    let filtered = jobs;
-
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter(job =>
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    }
-
-    // Location filter
-    if (locationFilter !== 'all') {
-      filtered = filtered.filter(job => {
-        if (locationFilter === 'remote') {
-          return job.location.toLowerCase().includes('remote') || job.workMode === 'remote';
-        }
-        return job.location.toLowerCase().includes(locationFilter.toLowerCase());
+  const fetchJobs = async () => {
+    setLoading(true);
+    try {
+      const data = await jobApiService.fetchJobs({
+        ...filters,
+        type: filters.type === 'internship' ? undefined : filters.type, // Exclude internships from main jobs page
       });
+      const nonInternshipJobs = data.filter(job => job.type !== 'internship');
+      setJobs(nonInternshipJobs);
+      setFilteredJobs(nonInternshipJobs);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Type filter
-    if (typeFilter !== 'all') {
-      filtered = filtered.filter(job => job.type === typeFilter);
-    }
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value === 'all' ? undefined : value
+    }));
+  };
 
-    // Work mode filter
-    if (workModeFilter !== 'all') {
-      filtered = filtered.filter(job => job.workMode === workModeFilter);
-    }
-
-    setFilteredJobs(filtered);
-  }, [jobs, searchQuery, locationFilter, typeFilter, workModeFilter]);
+  const handleSearchChange = (query: string) => {
+    setFilters(prev => ({
+      ...prev,
+      query: query || undefined
+    }));
+  };
 
   const handleSaveJob = (jobId: string) => {
     setJobs(prev => prev.map(job => 
       job.id === jobId ? { ...job, isSaved: !job.isSaved } : job
     ));
+  };
+
+  const getSourceBadgeColor = (source: string) => {
+    switch (source.toLowerCase()) {
+      case 'linkedin': return 'bg-blue-600 text-white';
+      case 'indeed': return 'bg-blue-500 text-white';
+      case 'naukri': return 'bg-purple-100 text-purple-800';
+      case 'apna': return 'bg-orange-100 text-orange-800';
+      case 'glassdoor': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
   const getTypeLabel = (type: string) => {
@@ -202,21 +112,32 @@ const Jobs = () => {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Job Opportunities</h1>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <Briefcase className="h-6 w-6 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold">Job Opportunities</h1>
+        </div>
         <p className="text-muted-foreground">
-          Discover amazing career opportunities from top companies
+          Discover amazing career opportunities from top platforms including LinkedIn, Naukri, Indeed, Apna, and more
         </p>
+        <div className="flex flex-wrap gap-2 mt-4">
+          <Badge variant="outline" className="bg-blue-50">💼 Connected to LinkedIn</Badge>
+          <Badge variant="outline" className="bg-purple-50">🔍 Naukri Integration</Badge>
+          <Badge variant="outline" className="bg-blue-50">📋 Indeed API</Badge>
+          <Badge variant="outline" className="bg-orange-50">📱 Apna Jobs</Badge>
+        </div>
       </div>
 
-      {/* Search and Filters */}
+      {/* Advanced Search and Filters */}
       <div className="mb-8 space-y-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               placeholder="Search jobs, companies, or skills..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={filters.query || ''}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -226,9 +147,9 @@ const Jobs = () => {
           </Button>
         </div>
 
-        <div className="flex flex-wrap gap-4">
-          <Select value={locationFilter} onValueChange={setLocationFilter}>
-            <SelectTrigger className="w-[180px]">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <Select value={filters.location || 'all'} onValueChange={(value) => handleFilterChange('location', value)}>
+            <SelectTrigger>
               <SelectValue placeholder="Location" />
             </SelectTrigger>
             <SelectContent>
@@ -237,25 +158,25 @@ const Jobs = () => {
               <SelectItem value="san francisco">San Francisco</SelectItem>
               <SelectItem value="new york">New York</SelectItem>
               <SelectItem value="austin">Austin</SelectItem>
-              <SelectItem value="los angeles">Los Angeles</SelectItem>
+              <SelectItem value="bangalore">Bangalore</SelectItem>
+              <SelectItem value="mumbai">Mumbai</SelectItem>
             </SelectContent>
           </Select>
 
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[150px]">
+          <Select value={filters.type || 'all'} onValueChange={(value) => handleFilterChange('type', value)}>
+            <SelectTrigger>
               <SelectValue placeholder="Job Type" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="full_time">Full-time</SelectItem>
               <SelectItem value="part_time">Part-time</SelectItem>
-              <SelectItem value="internship">Internship</SelectItem>
               <SelectItem value="contract">Contract</SelectItem>
             </SelectContent>
           </Select>
 
-          <Select value={workModeFilter} onValueChange={setWorkModeFilter}>
-            <SelectTrigger className="w-[150px]">
+          <Select value={filters.workMode || 'all'} onValueChange={(value) => handleFilterChange('workMode', value)}>
+            <SelectTrigger>
               <SelectValue placeholder="Work Mode" />
             </SelectTrigger>
             <SelectContent>
@@ -265,13 +186,50 @@ const Jobs = () => {
               <SelectItem value="hybrid">Hybrid</SelectItem>
             </SelectContent>
           </Select>
+
+          <Select value={filters.experience || 'all'} onValueChange={(value) => handleFilterChange('experience', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Experience" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Levels</SelectItem>
+              <SelectItem value="entry">Entry Level (0-2 years)</SelectItem>
+              <SelectItem value="mid">Mid Level (2-5 years)</SelectItem>
+              <SelectItem value="senior">Senior Level (5+ years)</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={filters.postedWithin || 'all'} onValueChange={(value) => handleFilterChange('postedWithin', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Posted" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Any Time</SelectItem>
+              <SelectItem value="24h">Last 24 hours</SelectItem>
+              <SelectItem value="3d">Last 3 days</SelectItem>
+              <SelectItem value="7d">Last week</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select>
+            <SelectTrigger>
+              <SelectValue placeholder="Platform" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Platforms</SelectItem>
+              <SelectItem value="linkedin">LinkedIn</SelectItem>
+              <SelectItem value="naukri">Naukri</SelectItem>
+              <SelectItem value="indeed">Indeed</SelectItem>
+              <SelectItem value="apna">Apna</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       {/* Results Count */}
       <div className="mb-6">
         <p className="text-muted-foreground">
-          Showing {filteredJobs.length} of {jobs.length} jobs
+          Showing {filteredJobs.length} jobs from {new Set(jobs.map(j => j.source)).size} platforms
         </p>
       </div>
 
@@ -283,6 +241,9 @@ const Jobs = () => {
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
+                    <Badge className={getSourceBadgeColor(job.source)}>
+                      {job.source}
+                    </Badge>
                     {job.isUrgent && (
                       <Badge variant="destructive" className="text-xs">
                         Urgent
@@ -296,7 +257,12 @@ const Jobs = () => {
                     )}
                   </div>
                   <CardTitle className="text-lg mb-2">{job.title}</CardTitle>
-                  <p className="text-primary font-semibold">{job.company}</p>
+                  <div className="flex items-center gap-2">
+                    {job.companyLogo && (
+                      <img src={job.companyLogo} alt={job.company} className="h-6 w-6 rounded" />
+                    )}
+                    <p className="text-primary font-semibold">{job.company}</p>
+                  </div>
                 </div>
                 <Button
                   variant="ghost"
@@ -318,10 +284,18 @@ const Jobs = () => {
                   <Briefcase className="h-4 w-4 mr-2" />
                   {getTypeLabel(job.type)} • {getWorkModeLabel(job.workMode)}
                 </div>
-                <div className="flex items-center text-sm font-semibold text-success">
-                  <DollarSign className="h-4 w-4 mr-1" />
-                  {job.salary}
-                </div>
+                {(job.salary || job.stipend) && (
+                  <div className="flex items-center text-sm font-semibold text-success">
+                    <DollarSign className="h-4 w-4 mr-1" />
+                    {job.salary || job.stipend}
+                  </div>
+                )}
+                {job.experience && (
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Users className="h-4 w-4 mr-2" />
+                    {job.experience} experience
+                  </div>
+                )}
               </div>
 
               <p className="text-sm text-muted-foreground line-clamp-2">
