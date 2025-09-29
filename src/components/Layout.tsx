@@ -79,7 +79,7 @@ export function Layout({ children }: LayoutProps) {
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  JobPortal
+                  SkillMatchr
                 </span>
               </Link>
             </div>
@@ -255,7 +255,7 @@ export function Layout({ children }: LayoutProps) {
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  JobPortal
+                  SkillMatchr
                 </span>
               </div>
               <p className="text-sm text-muted-foreground">
