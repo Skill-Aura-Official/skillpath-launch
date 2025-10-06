@@ -283,7 +283,6 @@ export type Database = {
           location: string | null
           phone: string | null
           resume_url: string | null
-          role: Database["public"]["Enums"]["user_role"]
           skills: string[] | null
           updated_at: string
           user_id: string
@@ -305,7 +304,6 @@ export type Database = {
           location?: string | null
           phone?: string | null
           resume_url?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
           skills?: string[] | null
           updated_at?: string
           user_id: string
@@ -327,7 +325,6 @@ export type Database = {
           location?: string | null
           phone?: string | null
           resume_url?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
           skills?: string[] | null
           updated_at?: string
           user_id?: string
@@ -371,14 +368,42 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "student" | "recruiter" | "admin"
       application_status: "pending" | "shortlisted" | "rejected" | "selected"
       job_type: "full_time" | "part_time" | "internship" | "contract"
       user_role: "student" | "recruiter" | "admin"
@@ -510,6 +535,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["student", "recruiter", "admin"],
       application_status: ["pending", "shortlisted", "rejected", "selected"],
       job_type: ["full_time", "part_time", "internship", "contract"],
       user_role: ["student", "recruiter", "admin"],

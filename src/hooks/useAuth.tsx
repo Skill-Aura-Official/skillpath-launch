@@ -6,6 +6,7 @@ import { toast } from '@/hooks/use-toast';
 interface AuthContextType {
   user: User | null;
   profile: any | null;
+  role: string | null;
   loading: boolean;
   signUp: (email: string, password: string, userData: any) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,17 +54,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
-        throw error;
+      if (profileError && profileError.code !== 'PGRST116') {
+        throw profileError;
       }
 
-      setProfile(data);
+      setProfile(profileData);
+
+      // Fetch user role from user_roles table
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      if (roleError && roleError.code !== 'PGRST116') {
+        console.error('Error fetching role:', roleError);
+      }
+
+      setRole(roleData?.role || null);
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -243,6 +258,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user,
     profile,
+    role,
     loading,
     signUp,
     signIn,

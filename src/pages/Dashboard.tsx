@@ -23,7 +23,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 
 const Dashboard = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, role } = useAuth();
   const { setTheme } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -34,24 +34,24 @@ const Dashboard = () => {
       return;
     }
 
-    if (!profile) {
-      return; // Wait for profile to load
+    if (!role) {
+      return; // Wait for role to load
     }
 
     // Set theme based on role - only if not already set
     const currentTheme = localStorage.getItem('theme');
     if (!currentTheme || currentTheme === 'system') {
-      if (profile?.role === 'student') {
+      if (role === 'student') {
         setTheme('casual');
-      } else if (profile?.role === 'recruiter') {
+      } else if (role === 'recruiter') {
         setTheme('professional');
-      } else if (profile?.role === 'admin') {
+      } else if (role === 'admin') {
         setTheme('light');
       }
     }
 
     setLoading(false);
-  }, [user, profile, navigate, setTheme]);
+  }, [user, role, navigate, setTheme]);
 
   if (loading) {
     return (
@@ -89,14 +89,14 @@ const Dashboard = () => {
               Welcome back, {profile.full_name}!
             </h1>
             <p className="text-muted-foreground">
-              {profile.role === 'student' && "Ready to find your next opportunity?"}
-              {profile.role === 'recruiter' && "Let's find great talent today!"}
-              {profile.role === 'admin' && "Manage your platform efficiently."}
+              {role === 'student' && "Ready to find your next opportunity?"}
+              {role === 'recruiter' && "Let's find great talent today!"}
+              {role === 'admin' && "Manage your platform efficiently."}
             </p>
           </div>
           <div className="flex items-center space-x-4">
             <Badge variant="secondary" className="capitalize">
-              {profile.role}
+              {role}
             </Badge>
             <Avatar>
               <AvatarImage src={profile.avatar_url} alt={profile.full_name} />
@@ -108,7 +108,7 @@ const Dashboard = () => {
         </div>
 
         {/* Student Dashboard */}
-        {profile.role === 'student' && (
+        {role === 'student' && (
           <>
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -208,7 +208,7 @@ const Dashboard = () => {
         )}
 
         {/* Recruiter Dashboard */}
-        {profile.role === 'recruiter' && (
+        {role === 'recruiter' && (
           <>
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -308,7 +308,7 @@ const Dashboard = () => {
         )}
 
         {/* Admin Dashboard */}
-        {profile.role === 'admin' && (
+        {role === 'admin' && (
           <>
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
