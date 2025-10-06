@@ -28,7 +28,7 @@ const Login = () => {
 
     try {
       await signIn(email, password);
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       // Error is handled in the auth hook
     } finally {

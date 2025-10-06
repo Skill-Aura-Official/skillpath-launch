@@ -109,12 +109,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
+
+      // Fetch the user's profile to get role info
+      if (data.user) {
+        await fetchProfile(data.user.id);
+      }
 
       toast({
         title: "Welcome back!",

@@ -34,13 +34,20 @@ const Dashboard = () => {
       return;
     }
 
-    // Set theme based on role
-    if (profile?.role === 'student') {
-      setTheme('casual');
-    } else if (profile?.role === 'recruiter') {
-      setTheme('professional');
-    } else if (profile?.role === 'admin') {
-      setTheme('light');
+    if (!profile) {
+      return; // Wait for profile to load
+    }
+
+    // Set theme based on role - only if not already set
+    const currentTheme = localStorage.getItem('theme');
+    if (!currentTheme || currentTheme === 'system') {
+      if (profile?.role === 'student') {
+        setTheme('casual');
+      } else if (profile?.role === 'recruiter') {
+        setTheme('professional');
+      } else if (profile?.role === 'admin') {
+        setTheme('light');
+      }
     }
 
     setLoading(false);
