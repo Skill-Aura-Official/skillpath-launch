@@ -26,7 +26,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
 const Profile = () => {
-  const { user, profile, updateProfile } = useAuth();
+  const { user, profile, role, updateProfile } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -69,7 +69,7 @@ const Profile = () => {
                   <h2 className="text-xl font-semibold">{profile.full_name}</h2>
                   <p className="text-muted-foreground">{profile.email}</p>
                   <Badge variant="secondary" className="mt-2">
-                    {profile.role}
+                    {role}
                   </Badge>
                 </div>
               </div>

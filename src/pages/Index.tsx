@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -41,17 +42,17 @@ interface JobListing {
 interface Stat {
   label: string;
   value: string;
-  icon: any;
+  icon: LucideIcon;
 }
 
 interface Feature {
   title: string;
   description: string;
-  icon: any;
+  icon: LucideIcon;
 }
 
 const Index = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, role } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -122,9 +123,9 @@ const Index = () => {
 
   const handleGetStarted = () => {
     if (user) {
-      if (profile?.role === 'student') {
+      if (role === 'student') {
         navigate('/dashboard');
-      } else if (profile?.role === 'recruiter') {
+      } else if (role === 'recruiter') {
         navigate('/dashboard');
       } else {
         navigate('/dashboard');

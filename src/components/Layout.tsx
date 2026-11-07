@@ -36,7 +36,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, role, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -47,11 +47,11 @@ export function Layout({ children }: LayoutProps) {
     { name: 'Companies', href: '/companies', icon: Briefcase },
   ];
 
-  const userNavigation = profile?.role === 'student' ? [
+  const userNavigation = role === 'student' ? [
     { name: 'My Applications', href: '/applications', icon: Bookmark },
     { name: 'Saved Jobs', href: '/saved-jobs', icon: Bookmark },
     { name: 'Messages', href: '/messages', icon: MessageSquare },
-  ] : profile?.role === 'recruiter' ? [
+  ] : role === 'recruiter' ? [
     { name: 'Post Job', href: '/recruiter/post-job', icon: PlusCircle },
     { name: 'My Jobs', href: '/recruiter/jobs', icon: Briefcase },
     { name: 'Applications', href: '/recruiter/applications', icon: Users },
@@ -155,7 +155,7 @@ export function Layout({ children }: LayoutProps) {
                             {profile.email}
                           </p>
                           <Badge variant="secondary" className="w-fit text-xs">
-                            {profile.role}
+                            {role}
                           </Badge>
                         </div>
                       </DropdownMenuLabel>

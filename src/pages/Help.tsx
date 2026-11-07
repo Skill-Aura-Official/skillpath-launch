@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import { 
   Search, 
@@ -29,7 +30,7 @@ interface HelpCategory {
   id: string;
   title: string;
   description: string;
-  icon: any;
+  icon: LucideIcon;
   articles: number;
 }
 

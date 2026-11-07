@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { 
   MessageCircle, 
@@ -29,7 +30,7 @@ interface Message {
 
 interface QuickAction {
   label: string;
-  icon: any;
+  icon: LucideIcon;
   message: string;
 }
 

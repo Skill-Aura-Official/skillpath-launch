@@ -33,4 +33,4 @@ If the page fails during initialization, verify Supabase configuration. If lists
 
 ## Documentation review checks (2026-11-07)
 
-Clean installation (lifecycle scripts disabled) and build passed on Node 24.3.0. Lint reported 20 errors and 12 warnings. Live cloud workflows remain unverified.
+Clean installation (lifecycle scripts disabled) and build passed on Node 24.3.0. The source repair now passes lint with zero errors and 12 existing warnings, plus `npx tsc -p tsconfig.app.json --noEmit`. Profile consumers use the role already fetched from `user_roles`; generated profile types, explicit icon/prop types and unknown-error narrowing replace unchecked types. Live cloud workflows remain unverified.
