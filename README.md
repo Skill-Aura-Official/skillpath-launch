@@ -1,73 +1,36 @@
-# Welcome to your Lovable project
+# Skillpath launch
 
-## Project info
+A React/TypeScript career-platform prototype maintained in Skill-Aura-Official's repository. The UI includes jobs and internships, companies, a candidate profile/dashboard, recruiter job posting, authentication and career-help views. It originated from a Lovable starter and uses Vite, shadcn/ui and Tailwind CSS; existing contributor and dependency attribution is preserved.
 
-**URL**: https://lovable.dev/projects/3df0551a-5293-4089-a2d1-948b1b4308c8
+## Current implementation
 
-## How can I edit this code?
+Supabase supplies the authentication/data client. `supabase/migrations` contains schema and policy migrations. `src/services/realTimeJobApi.ts` returns mock job listings for named job sources; these are not verified live provider feeds. `src/components/AIAssistant.tsx` uses local keyword-based responses and a simulated delay, not a demonstrated external language-model service. UI labels must not be taken as evidence of live job sourcing or AI accuracy.
 
-There are several ways of editing your application.
+## Local development
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/3df0551a-5293-4089-a2d1-948b1b4308c8) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Use Node.js and npm compatible with the locked Vite 5 dependencies (Node 24.3.0 was used for the build check). From the repository root:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm ci
+npm run dev -- --host 127.0.0.1
 ```
 
-**Edit a file directly in GitHub**
+The configured development port is 8080. Read the printed URL if that port is occupied. Configure `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` for an authorized development project; these are browser-visible settings. Never use a service-role key in a Vite variable. `VITE_API_URL` is referenced by job services but does not turn mock providers into live integrations. Preserve existing configuration and do not copy committed environment values into another installation.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Review and apply the SQL files under `supabase/migrations` to the intended development project through an authorized Supabase workflow, in filename order. This review did not apply cloud migrations or provision accounts. Authentication uses Supabase; no default user or administrator is supplied. Verify signup, redirects, roles and row-level policies against your project before use with real data.
 
-**Use GitHub Codespaces**
+## Build and checks
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```sh
+npm run build
+npm run lint
+npm run preview -- --host 127.0.0.1
+```
 
-## What technologies are used for this project?
+`build:dev` is also available for a development-mode bundle. No automated test script is declared. Builds/lint do not prove cloud authentication, recruiter authorization or real job availability. Deployment needs SPA route fallback and the correct public build configuration; no hosted deployment was verified here. A Lovable project link is not required for local development.
 
-This project is built with:
+If the page fails during initialization, verify Supabase configuration. If lists show examples, inspect the mock provider implementation before attributing the issue to a remote service. There is no repository licence file in this revision; this README grants no new licence and preserves all existing notices.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Documentation review checks (2026-11-07)
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/3df0551a-5293-4089-a2d1-948b1b4308c8) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Clean installation (lifecycle scripts disabled) and build passed on Node 24.3.0. Lint reported 20 errors and 12 warnings. Live cloud workflows remain unverified.
